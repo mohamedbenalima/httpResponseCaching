@@ -25,13 +25,20 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
           emit(PokemonData(data: localPokemonData));
           // Fetch data from the remote server
           final remotePokemonData = await remoteRepository.getPokemons();
-          // Checking if the data changed in the remote server,
+          // Checking if the data is changed in the remote server,
           // if not there is no need to update data already emitted.
+          // [### To simulate app behaviour when data is changed from the server,
+          // just make the condition below true " if(true){.....}" ###]
+          // if (true) {   // <= uncomment here to make the condition true !!
           if (jsonEncode(localPokemonData) != jsonEncode(remotePokemonData)) {
-            emit(Loading());
+            emit(PokemonData(data: localPokemonData, isDataUpdating: true));
+            await Future.delayed(const Duration(milliseconds: 1000), () {
+              // Simulating data fetching time
+              log('This delay is for testing purposes');
+            });
             // Save the new remote data to the local file.
             localRepository.savePokemons(data: remotePokemonData);
-            emit(PokemonData(data: remotePokemonData));
+            emit(PokemonData(data: remotePokemonData, isDataUpdating: false));
           }
         } else {
           log("Entred to get remote data");

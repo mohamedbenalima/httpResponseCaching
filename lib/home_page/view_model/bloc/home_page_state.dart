@@ -9,6 +9,7 @@ class Loading extends HomePageState {}
 
 class PokemonData extends HomePageState {
   final List<Pokemon>? data;
+  final bool isDataUpdating;
 
-  PokemonData({this.data});
+  PokemonData({this.data, this.isDataUpdating = false});
 }

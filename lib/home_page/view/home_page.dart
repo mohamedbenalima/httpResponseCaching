@@ -1,6 +1,5 @@
 import 'package:datacachingapp/home_page/view/widgets/card_pokemon.dart';
 import 'package:datacachingapp/home_page/view_model/bloc/home_page_bloc.dart';
-import 'package:datacachingapp/home_page/view_model/repository/local_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,21 +20,39 @@ class _HomePageState extends State<HomePage> {
       ),
       body: BlocBuilder<HomePageBloc, HomePageState>(
         builder: (context, state) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: state is Loading
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : state is PokemonData
-                    ? ListView.builder(
-                        itemCount: state.data?.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return CardPokemon(name: state.data![index].name);
-                        },
-                      )
-                    : Container(),
-          );
+          if (state is Loading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is PokemonData) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  state.isDataUpdating == true
+                      ? const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: CircularProgressIndicator(),
+                        )
+                      : Container(),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: state.data?.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return CardPokemon(name: state.data![index].name);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return const Center(
+              child: Text(
+                'Press the floating action button to get the data !!',
+              ),
+            );
+          }
         },
       ),
       floatingActionButton: FloatingActionButton(
